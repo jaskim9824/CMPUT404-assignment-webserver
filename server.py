@@ -31,8 +31,32 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        print ("Got a request of: %s\n" % self.data)
+        requestString = str(self.data)
+        requestString = requestString[2:requestString.find("HTTP")]
+        print ("Got a request of: %s\n" % requestString)
+        requestArray = requestString.split()
+        if requestArray[0] == "GET":
+            self.sendGetResponse(requestArray[1])
+        else:
+            print("Requests other than GET are not supported")
         self.request.sendall(bytearray("OK",'utf-8'))
+
+    def sendGetResponse(self, requestedPath):
+        print("Handling GET request for route " + requestedPath)
+        pathArray = requestedPath.split("/")
+        #requested index
+        if (pathArray[-1] == ""):
+            print("Requested Directory, returning ./www" + requestedPath +"index.html")
+        elif (not pathArray[-1].find(".")):
+            print("Redirect to path " + requestedPath +"/")      
+        #requested file
+        else:
+            print("Requesting file ./www" + requestedPath)
+
+
+
+
+        
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
