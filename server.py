@@ -40,7 +40,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        requestString = str(self.data)
         requestString = requestString[2:requestString.find("HTTP")]
         print ("Got a request of: %s\n" % requestString)
         requestArray = requestString.split()
@@ -50,7 +49,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
         else:
             print("Requests other than GET are not supported")
             response = "HTTP/1.1 405 Method Not Allowed\r\n"
-        print(response)
         self.request.sendall(bytearray(response,'utf-8'))
 
     def serveFileRequest(self, pathToFile, fileType):
@@ -72,24 +70,33 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
     def returnResponse(self, requestedPath):
         print("Handling GET request for route " + requestedPath)
+        # Create an array of the different levels of the requested path, last element of the path
+        # is either the requested file or directory
         pathArray = requestedPath.split("/")
+        # Clean the array to account for mutiple / 
         self.cleanPathArray(pathArray)
+        # Check if requested path is in ./www directory
         if (not self.checkPathSecurity(requestedPath)):
             print("Attempting to access path outside of www directory, forbidden")
             return "HTTP/1.1 404 Not Found \r\n"
+        # Check if requested path exists, return 404 if not
         if (not os.path.exists("./www" + requestedPath)):
             print("Attempting to access a non-existent path")
             return "HTTP/1.1 404 Not Found \r\n"
         else:
+            # Check if requested path is a file, and return that file
             if (os.path.isfile("./www" + requestedPath)):
                 print("Requesting file ./www" + requestedPath)
+                # Check extension of file to detrimine mime types
                 fileExt = ""
                 if pathArray[-1].find(".html") != -1:
                     fileExt = ".html"
                 elif pathArray[-1].find(".css") != -1:
                     fileExt = ".css"
                 return self.serveFileRequest("./www" + requestedPath, fileExt)
+            # Path is a directory
             else:
+                # Check if path ends with /, redirect if not
                 if (requestedPath[-1] == "/"):
                     print("Requested ./www" + requestedPath +"index.html")
                     return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
@@ -107,6 +114,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
             pathArray.remove("")
             counter -= 1
 
+    # Based of off:
+    # https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
     def checkPathSecurity(self, requestedPath):
         absPathofWWW = os.path.abspath("./www")
         print("www's abs path is " + absPathofWWW)
