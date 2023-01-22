@@ -33,6 +33,7 @@ import os
 # https://uofa-cmput404.github.io/cmput404-slides/04-HTTP
 # https://www.w3.org/Protocols/HTTP/1.0/spec.html
 # https://tecfa.unige.ch/moo/book2/node93.html
+# https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
 
 
 class MyWebServer(socketserver.BaseRequestHandler):
@@ -72,38 +73,30 @@ class MyWebServer(socketserver.BaseRequestHandler):
     def returnResponse(self, requestedPath):
         print("Handling GET request for route " + requestedPath)
         pathArray = requestedPath.split("/")
-        print(pathArray)
         self.cleanPathArray(pathArray)
-        print(pathArray)
-        depth = self.checkPathDepth(pathArray)
-        print("Handling path at path depth: " + str(depth))
-        if (depth < 0):
+        if (not self.checkPathSecurity(requestedPath)):
             print("Attempting to access path outside of www directory, forbidden")
             return "HTTP/1.1 404 Not Found \r\n"
-        if (pathArray[-1] == ""):
-            print("Requested Directory, returning ./www" + requestedPath +"index.html")
-            if not os.path.exists("./www" + requestedPath + "index.html"):
-                return "HTTP/1.1 404 Not Found \r\n"
-            else:
-                return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
-        elif (pathArray[-1].find(".html") == -1 and pathArray[-1].find(".css") == -1):
-            print("Redirect to path " + requestedPath +"/")   
-            if not os.path.exists("./www" + requestedPath + "/" + "index.html"):
-                return "HTTP/1.1 404 Not Found \r\n"
-            else:
-                return "HTTP/1.1 301 Moved Permanently\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/"   
-        #requested file
+        if (not os.path.exists("./www" + requestedPath)):
+            print("Attempting to access a non-existent path")
+            return "HTTP/1.1 404 Not Found \r\n"
         else:
-            print("Requesting file www" + requestedPath)
-            fileExt = ""
-            if pathArray[-1].find(".html") != -1:
-                fileExt = ".html"
-            elif pathArray[-1].find(".css") != -1:
-                fileExt = ".css"
-            if not os.path.exists("./www" + requestedPath):
-                return "HTTP/1.1 404 Not Found  \r\n"
-            else:
+            if (os.path.isfile("./www" + requestedPath)):
+                print("Requesting file ./www" + requestedPath)
+                fileExt = ""
+                if pathArray[-1].find(".html") != -1:
+                    fileExt = ".html"
+                elif pathArray[-1].find(".css") != -1:
+                    fileExt = ".css"
                 return self.serveFileRequest("./www" + requestedPath, fileExt)
+            else:
+                if (requestedPath[-1] == "/"):
+                    print("Requested ./www" + requestedPath +"index.html")
+                    return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
+                else:
+                    print("Redirect to path " + requestedPath +"/")   
+                    return "HTTP/1.1 301 Moved Permanently\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/"   
+                
 
     def cleanPathArray(self, pathArray):
         counter = 0
@@ -114,22 +107,12 @@ class MyWebServer(socketserver.BaseRequestHandler):
             pathArray.remove("")
             counter -= 1
 
-    def checkPathDepth(self, pathArray):
-        # depth = 0, www directory
-        depth = 0
-        for pathItem in pathArray:
-            print(pathItem)
-            if pathItem == "" or pathItem.find(".html") != -1 or pathItem.find(".css") != -1:
-                print("Stopping")
-                return depth
-            elif pathItem == "..":
-                print("Reducing depth")
-                depth -= 1
-            else:
-                print("Increasing depth")
-                depth += 1
-        print(depth)
-        return depth
+    def checkPathSecurity(self, requestedPath):
+        absPathofWWW = os.path.abspath("./www")
+        print("www's abs path is " + absPathofWWW)
+        absPathOfRequest = os.path.abspath( "./www" + requestedPath)
+        print("Requested abs path is " + absPathOfRequest)
+        return os.path.commonpath([absPathofWWW, absPathOfRequest]) == absPathofWWW
 
 
 
