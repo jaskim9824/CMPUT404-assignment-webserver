@@ -29,10 +29,16 @@ import os
 # try: curl -v -X GET http://127.0.0.1:8080/
 
 # Sources:
+# For checking if path exists, and whether a path is a file or directory:
 # https://www.geeksforgeeks.org/python-check-if-a-file-or-directory-exists/
+
+# For formatting HTTP responses:
 # https://uofa-cmput404.github.io/cmput404-slides/04-HTTP
 # https://www.w3.org/Protocols/HTTP/1.0/spec.html
+# https://www.rfc-editor.org/rfc/rfc2616#section-10.4.6
 # https://tecfa.unige.ch/moo/book2/node93.html
+
+# For checking path security:
 # https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
 
 
@@ -51,11 +57,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
             response = self.returnResponse(requestArray[1])
         else:
             print("Requests other than GET are not supported")
-            response = "HTTP/1.1 405 Method Not Allowed\r\n"
+            response = "HTTP/1.1 405 Method Not Allowed\r\ngitAllow: GET\r\n"
         self.request.sendall(bytearray(response,'utf-8'))
 
+    # Returns the response for a GET request of a specfic file
+    # Parameters:
+    #   pathToFile - path to specfic file
+    #   fileType - extension of file requested
     def serveFileRequest(self, pathToFile, fileType):
-        response = """HTTP/1.1 200 OK \r\nContent-type: {contentType}\r\nConnection:keep-alive\r\n\r\n"""
+        response = "HTTP/1.1 200 OK \r\nContent-type: {contentType}\r\nConnection:keep-alive\r\n\r\n"
         if fileType == ".html":
             response = response.format(contentType="text/html")
             file = open(pathToFile, "r")
@@ -70,7 +80,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
             return response
         return ""
 
-
+    # Return the response for a certain GET request
+    # Parameters:
+    #   requestedPath - requested path in GET request
     def returnResponse(self, requestedPath):
         print("Handling GET request for route " + requestedPath)
         # Create an array of the different levels of the requested path, last element of the path
@@ -78,7 +90,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         pathArray = requestedPath.split("/")
         # Clean the array to account for mutiple / 
         self.cleanPathArray(pathArray)
-        # Check if requested path is in ./www directory
+        # Check if requested path is in ./www directory, 404 if not
         if (not self.checkPathSecurity(requestedPath)):
             print("Attempting to access path outside of www directory, forbidden")
             return "HTTP/1.1 404 Not Found \r\n"
@@ -107,7 +119,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
                     print("Redirect to path " + requestedPath +"/")   
                     return "HTTP/1.1 301 Moved Permanently\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/"   
                 
-
+    # Cleans path array so extra '' elements are removed, accounting for potential mutiple / in path
+    # Parameters:
+    #   pathArray - uncleaned path array
     def cleanPathArray(self, pathArray):
         counter = 0
         for i in range(0, len(pathArray)-1):
@@ -117,13 +131,19 @@ class MyWebServer(socketserver.BaseRequestHandler):
             pathArray.remove("")
             counter -= 1
 
-    # Based of off:
-    # https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
+    # Checks if requested path is within www directory
+    # Paramters:
+    #   requestedPath - requested path from request
+    # Source:
+    #   Name: Tom Bull
+    #   Date: May 8, 2016
+    #   URL: https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
     def checkPathSecurity(self, requestedPath):
+        # Obtain absolute path of www directory
         absPathofWWW = os.path.abspath("./www")
-        print("www's abs path is " + absPathofWWW)
+        # Obtain absolute path of requested path
         absPathOfRequest = os.path.abspath( "./www" + requestedPath)
-        print("Requested abs path is " + absPathOfRequest)
+        # Check if requested path is within the www directory
         return os.path.commonpath([absPathofWWW, absPathOfRequest]) == absPathofWWW
 
 
