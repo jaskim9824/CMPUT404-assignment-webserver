@@ -43,6 +43,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
         requestString = str(self.data)
         requestString = requestString[2:requestString.find("HTTP")]
         print ("Got a request of: %s\n" % requestString)
+        if (requestString == ""):
+            return
         requestArray = requestString.split()
         response = ""
         if requestArray[0] == "GET":
