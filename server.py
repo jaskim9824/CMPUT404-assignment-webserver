@@ -57,7 +57,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
             response = self.returnResponse(requestArray[1])
         else:
             print("Requests other than GET are not supported")
-            response = "HTTP/1.1 405 Method Not Allowed\r\ngitAllow: GET\r\n"
+            response = "HTTP/1.1 405 Method Not Allowed\r\nAllow: GET\r\n"
         self.request.sendall(bytearray(response,'utf-8'))
 
     # Returns the response for a GET request of a specfic file
