@@ -40,6 +40,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
+        requestString = str(self.data)
         requestString = requestString[2:requestString.find("HTTP")]
         print ("Got a request of: %s\n" % requestString)
         requestArray = requestString.split()
