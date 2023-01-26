@@ -98,26 +98,28 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if (not os.path.exists("./www" + requestedPath)):
             print("Attempting to access a non-existent path")
             return "HTTP/1.1 404 Not Found \r\n"
-        else:
-            # Check if requested path is a file, and return that file
-            if (os.path.isfile("./www" + requestedPath)):
-                print("Requesting file ./www" + requestedPath)
+        # Check if requested path is a file, and return that file
+        if (os.path.isfile("./www" + requestedPath)):
+            print("Requesting file ./www" + requestedPath)
                 # Check extension of file to detrimine mime types
-                fileExt = ""
-                if pathArray[-1].find(".html") != -1:
-                    fileExt = ".html"
-                elif pathArray[-1].find(".css") != -1:
-                    fileExt = ".css"
-                return self.serveFileRequest("./www" + requestedPath, fileExt)
-            # Path is a directory
+            fileExt = ""
+            if pathArray[-1].find(".html") != -1:
+                fileExt = ".html"
+            elif pathArray[-1].find(".css") != -1:
+                fileExt = ".css"
+            return self.serveFileRequest("./www" + requestedPath, fileExt)
+        # Path is a directory
+        else:
+            # Check if directory contains index.html
+            if (not os.path.exists("./www" + requestedPath + "/index.html")):
+                return "HTTP/1.1 404 Not Found \r\n"
+            # Check if path ends with /, redirect if not
+            if (requestedPath[-1] == "/"):
+                print("Requested ./www" + requestedPath +"index.html")
+                return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
             else:
-                # Check if path ends with /, redirect if not
-                if (requestedPath[-1] == "/"):
-                    print("Requested ./www" + requestedPath +"index.html")
-                    return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
-                else:
-                    print("Redirect to path " + requestedPath +"/")   
-                    return "HTTP/1.1 301 Moved Permanently\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/"   
+                print("Redirect to path " + requestedPath +"/")   
+                return "HTTP/1.1 301 Moved Permanently\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/"   
                 
     # Cleans path array so extra '' elements are removed, accounting for potential mutiple / in path
     # Parameters:
