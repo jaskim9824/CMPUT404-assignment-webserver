@@ -1,6 +1,7 @@
 #  coding: utf-8 
 import socketserver
 import os
+from email.utils import formatdate
 
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # Copyright 2023 Jason Kim
@@ -39,7 +40,14 @@ import os
 # https://tecfa.unige.ch/moo/book2/node93.html
 
 # For checking path security:
-# https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
+# Name: Tom Bull
+# URL: https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
+# Date: May 8, 2016
+
+# For formatting date in HTTP header style
+# Name: Ber
+# URL: https://stackoverflow.com/questions/225086/rfc-1123-date-representation-in-python
+# Date: Oct 22, 2008
 
 
 class MyWebServer(socketserver.BaseRequestHandler):
@@ -57,7 +65,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
             response = self.returnResponse(requestArray[1])
         else:
             print("Requests other than GET are not supported")
-            response = "HTTP/1.1 405 Method Not Allowed\r\nAllow: GET\r\n"
+            response = "HTTP/1.1 405 Method Not Allowed\r\nDate: {date}\r\nAllow: GET\r\n\r\n"
+            response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
         self.request.sendall(bytearray(response,'utf-8'))
 
     # Returns the response for a GET request of a specfic file
@@ -65,15 +74,17 @@ class MyWebServer(socketserver.BaseRequestHandler):
     #   pathToFile - path to specfic file
     #   fileType - extension of file requested
     def serveFileRequest(self, pathToFile, fileType):
-        response = "HTTP/1.1 200 OK \r\nContent-type: {contentType}\r\nConnection:keep-alive\r\n\r\n"
+        response = "HTTP/1.1 200 OK \r\nDate:{date}\r\nContent-type: {contentType}\r\nConnection:keep-alive\r\n\r\n"
         if fileType == ".html":
-            response = response.format(contentType="text/html")
+            response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True), 
+                                       contentType="text/html")
             file = open(pathToFile, "r")
             response += file.read()
             file.close()
             return response
         elif fileType == ".css":
-            response = response.format(contentType="text/css")
+            response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True),
+                                       contentType="text/css")
             file = open(pathToFile, "r")
             response += file.read()
             file.close()
@@ -93,11 +104,13 @@ class MyWebServer(socketserver.BaseRequestHandler):
         # Check if requested path is in ./www directory, 404 if not
         if (not self.checkPathSecurity(requestedPath)):
             print("Attempting to access path outside of www directory, forbidden")
-            return "HTTP/1.1 404 Not Found \r\n"
+            response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
+            return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
         # Check if requested path exists, return 404 if not
         if (not os.path.exists("./www" + requestedPath)):
             print("Attempting to access a non-existent path")
-            return "HTTP/1.1 404 Not Found \r\n"
+            response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
+            return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
         # Check if requested path is a file, and return that file
         if (os.path.isfile("./www" + requestedPath)):
             print("Requesting file ./www" + requestedPath)
@@ -112,14 +125,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
         else:
             # Check if directory contains index.html
             if (not os.path.exists("./www" + requestedPath + "/index.html")):
-                return "HTTP/1.1 404 Not Found \r\n"
+                return "HTTP/1.1 404 Not Found\r\n\r\n"
             # Check if path ends with /, redirect if not
             if (requestedPath[-1] == "/"):
                 print("Requested ./www" + requestedPath +"index.html")
                 return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
             else:
                 print("Redirect to path " + requestedPath +"/")   
-                return "HTTP/1.1 301 Moved Permanently\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/"   
+                response = "HTTP/1.1 301 Moved Permanently\r\nDate:{date}\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/\r\n\r\n"   
+                return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
                 
     # Cleans path array so extra '' elements are removed, accounting for potential mutiple / in path
     # Parameters:
