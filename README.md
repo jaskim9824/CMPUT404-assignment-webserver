@@ -25,3 +25,16 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
+Sources:
+For checking if path exists, and whether a path is a file or directory:
+https://www.geeksforgeeks.org/python-check-if-a-file-or-directory-exists/
+
+For formatting HTTP responses:
+https://uofa-cmput404.github.io/cmput404-slides/04-HTTP
+https://www.w3.org/Protocols/HTTP/1.0/spec.html
+https://www.rfc-editor.org/rfc/rfc2616#section-10.4.6
+https://tecfa.unige.ch/moo/book2/node93.html
+
+For checking path security:
+https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
+
