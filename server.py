@@ -93,7 +93,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
             response += file.read()
             file.close()
             return response
-        return ""
+        # not .html or .css
+        else:
+            response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True),
+                                       contentType="application/octet-stream")
+            file = open(pathToFile, "r")
+            response += file.read()
+            file.close()
+            return response
 
     # Return the response for a certain GET request
     # Parameters:
