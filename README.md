@@ -27,9 +27,11 @@ compatible) http://docs.python.org/2/library/socketserver.html
 
 Sources:
 For checking if path exists, and whether a path is a file or directory:
+GeeksForGeeks
 Author: nikhilaggarwal3
 Title: Python – Check if a file or directory exists
 URL: https://www.geeksforgeeks.org/python-check-if-a-file-or-directory-exists/
+Date: Aug 31, 2022
 
 For checking path security:
 StackOverflow
