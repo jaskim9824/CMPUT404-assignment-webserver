@@ -27,26 +27,25 @@ compatible) http://docs.python.org/2/library/socketserver.html
 
 Sources:
 For checking if path exists, and whether a path is a file or directory:
-https://www.geeksforgeeks.org/python-check-if-a-file-or-directory-exists/
-
-For formatting HTTP responses:
-https://uofa-cmput404.github.io/cmput404-slides/04-HTTP
-https://www.w3.org/Protocols/HTTP/1.0/spec.html
-https://www.rfc-editor.org/rfc/rfc2616#section-10.4.6
-https://tecfa.unige.ch/moo/book2/node93.html
+Author: nikhilaggarwal3
+Title: Python – Check if a file or directory exists
+URL: https://www.geeksforgeeks.org/python-check-if-a-file-or-directory-exists/
 
 For checking path security:
-Name: Tom Bull
+StackOverflow
+Author: Tom Bull
 Author URL: https://stackoverflow.com/users/2010738/tom-bull
 Title: How to check whether a directory is a sub directory of another directory?
 Post URL: https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
 Date: May 8, 2016
 
-For formatting date in HTTP header style
-Name: Ber
+For formatting date in HTTP header style:
+StackOverflow
+Author: Ber
 Author URL: https://stackoverflow.com/users/11527/ber
 Title: RFC 1123 Date Representation in Python?
 URL: https://stackoverflow.com/questions/225086/rfc-1123-date-representation-in-python
 Date: Oct 22, 2008
+
 
 
