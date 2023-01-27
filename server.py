@@ -71,7 +71,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
             print("Requests other than GET are not supported")
             response = "HTTP/1.1 405 Method Not Allowed\r\nDate: {date}\r\nAllow: GET\r\n\r\n"
             response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
-        self.request.sendall(bytearray(response,'utf-8'))
+            response = bytearray(response,'utf-8')
+        self.request.sendall(response)
 
     # Returns the response for a GET request of a specfic file
     # Parameters:
@@ -82,14 +83,16 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if fileType == ".html":
             response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True), 
                                        contentType="text/html")
-            file = open(pathToFile, "r")
+            response = bytearray(response,'utf-8')
+            file = open(pathToFile, "rb")
             response += file.read()
             file.close()
             return response
         elif fileType == ".css":
             response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True),
                                        contentType="text/css")
-            file = open(pathToFile, "r")
+            response = bytearray(response,'utf-8')
+            file = open(pathToFile, "rb")
             response += file.read()
             file.close()
             return response
@@ -97,7 +100,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
         else:
             response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True),
                                        contentType="application/octet-stream")
-            file = open(pathToFile, "r")
+            response = bytearray(response,'utf-8')
+            file = open(pathToFile, "rb")
             response += file.read()
             file.close()
             return response
@@ -116,12 +120,12 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if (not self.checkPathSecurity(requestedPath)):
             print("Attempting to access path outside of www directory, forbidden")
             response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
-            return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
+            return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
         # Check if requested path exists, return 404 if not
         if (not os.path.exists("./www" + requestedPath)):
             print("Attempting to access a non-existent path")
             response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
-            return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
+            return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
         # Check if requested path is a file, and return that file
         if (os.path.isfile("./www" + requestedPath)):
             print("Requesting file ./www" + requestedPath)
@@ -141,12 +145,12 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 if (not os.path.exists("./www" + requestedPath + "index.html")):
                     print("Requested directory does not have index.html")
                     response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
-                    return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
+                    return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
                 return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
             else:
                 print("Redirect to path " + requestedPath +"/")   
                 response = "HTTP/1.1 301 Moved Permanently\r\nDate:{date}\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/\r\n\r\n"   
-                return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
+                return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
                 
     # Cleans path array so extra '' elements are removed, accounting for potential mutiple / in path
     # Parameters:
