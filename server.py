@@ -60,7 +60,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         requestString = str(self.data)
         requestString = requestString[2:requestString.find("HTTP")]
-        print ("Got a request of: %s\n" % requestString)
+        #print ("Got a request of: %s\n" % requestString)
         if (requestString == ""):
             return
         requestArray = requestString.split()
@@ -68,7 +68,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if requestArray[0] == "GET":
             response = self.returnResponse(requestArray[1])
         else:
-            print("Requests other than GET are not supported")
+            #print("Requests other than GET are not supported")
             response = "HTTP/1.1 405 Method Not Allowed\r\nDate: {date}\r\nAllow: GET\r\n\r\n"
             response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
             response = bytearray(response,'utf-8')
@@ -118,17 +118,17 @@ class MyWebServer(socketserver.BaseRequestHandler):
         self.cleanPathArray(pathArray)
         # Check if requested path is in ./www directory, 404 if not
         if (not self.checkPathSecurity(requestedPath)):
-            print("Attempting to access path outside of www directory, forbidden")
+            #print("Attempting to access path outside of www directory, forbidden")
             response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
             return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
         # Check if requested path exists, return 404 if not
         if (not os.path.exists("./www" + requestedPath)):
-            print("Attempting to access a non-existent path")
+            #print("Attempting to access a non-existent path")
             response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
             return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
         # Check if requested path is a file, and return that file
         if (os.path.isfile("./www" + requestedPath)):
-            print("Requesting file ./www" + requestedPath)
+            #print("Requesting file ./www" + requestedPath)
                 # Check extension of file to detrimine mime types
             fileExt = ""
             if pathArray[-1].find(".html") != -1:
@@ -140,15 +140,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
         else:
             # Check if path ends with /, redirect if not
             if (requestedPath[-1] == "/"):
-                print("Requested ./www" + requestedPath +"index.html")
+                #print("Requested ./www" + requestedPath +"index.html")
                 # Check if directory contains index.html
                 if (not os.path.exists("./www" + requestedPath + "index.html")):
-                    print("Requested directory does not have index.html")
+                    #print("Requested directory does not have index.html")
                     response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
                     return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
                 return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
             else:
-                print("Redirect to path " + requestedPath +"/")   
+                #print("Redirect to path " + requestedPath +"/")   
                 response = "HTTP/1.1 301 Moved Permanently\r\nDate:{date}\r\nLocation:http://127.0.0.1:8080" + requestedPath + "/\r\n\r\n"   
                 return bytearray(response.format(date=formatdate(timeval=None, localtime=False, usegmt=True)), 'utf-8')
                 
