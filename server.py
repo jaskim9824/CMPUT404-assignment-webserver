@@ -134,14 +134,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
             return self.serveFileRequest("./www" + requestedPath, fileExt)
         # Path is a directory
         else:
-            # Check if directory contains index.html
-            if (not os.path.exists("./www" + requestedPath + "/index.html")):
-                print("Requested directory does not have index.html")
-                response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
-                return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
             # Check if path ends with /, redirect if not
             if (requestedPath[-1] == "/"):
                 print("Requested ./www" + requestedPath +"index.html")
+                # Check if directory contains index.html
+                if (not os.path.exists("./www" + requestedPath + "index.html")):
+                    print("Requested directory does not have index.html")
+                    response = "HTTP/1.1 404 Not Found\r\nDate:{date}\r\n"
+                    return response.format(date=formatdate(timeval=None, localtime=False, usegmt=True))
                 return self.serveFileRequest("./www" + requestedPath + "index.html", ".html")
             else:
                 print("Redirect to path " + requestedPath +"/")   
