@@ -37,11 +37,15 @@ https://tecfa.unige.ch/moo/book2/node93.html
 
 For checking path security:
 Name: Tom Bull
-URL: https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
+Author URL: https://stackoverflow.com/users/2010738/tom-bull
+Title: How to check whether a directory is a sub directory of another directory?
+Post URL: https://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
 Date: May 8, 2016
 
 For formatting date in HTTP header style
 Name: Ber
+Author URL: https://stackoverflow.com/users/11527/ber
+Title: RFC 1123 Date Representation in Python?
 URL: https://stackoverflow.com/questions/225086/rfc-1123-date-representation-in-python
 Date: Oct 22, 2008
 
