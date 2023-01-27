@@ -25,6 +25,8 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
+root.png and deep.png is LICENSE'D under the Apache 2 license by Jason Kim
+
 Sources:  
   
 Getting length of file:  
