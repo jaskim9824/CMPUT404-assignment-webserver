@@ -79,9 +79,10 @@ class MyWebServer(socketserver.BaseRequestHandler):
     #   pathToFile - path to specfic file
     #   fileType - extension of file requested
     def serveFileRequest(self, pathToFile, fileType):
-        response = "HTTP/1.1 200 OK \r\nDate:{date}\r\nContent-type: {contentType}\r\nConnection:keep-alive\r\n\r\n"
+        response = "HTTP/1.1 200 OK \r\nDate:{date}\r\nContent-type: {contentType}\r\nContent-Length: {length}\r\nConnection:keep-alive\r\n\r\n"
         if fileType == ".html":
-            response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True), 
+            response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True),
+                                       length=os.stat(pathToFile).st_size,
                                        contentType="text/html")
             response = bytearray(response,'utf-8')
             file = open(pathToFile, "rb")
@@ -90,6 +91,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
             return response
         elif fileType == ".css":
             response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True),
+                                       length=os.stat(pathToFile).st_size,
                                        contentType="text/css")
             response = bytearray(response,'utf-8')
             file = open(pathToFile, "rb")
@@ -99,6 +101,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         # not .html or .css
         else:
             response = response.format(date=formatdate(timeval=None, localtime=False, usegmt=True),
+                                       length=os.stat(pathToFile).st_size,
                                        contentType="application/octet-stream")
             response = bytearray(response,'utf-8')
             file = open(pathToFile, "rb")
