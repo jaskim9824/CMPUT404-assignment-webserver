@@ -26,6 +26,13 @@ Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
 Sources:  
+  
+Getting length of file:  
+Author: Pankaj  
+Title: How to Get File Size in Python  
+URL: https://www.digitalocean.com/community/tutorials/how-to-get-file-size-in-python  
+Date: August 3, 2022  
+  
 For checking if path exists, and whether a path is a file or directory:  
 GeeksForGeeks  
 Author: nikhilaggarwal3  
