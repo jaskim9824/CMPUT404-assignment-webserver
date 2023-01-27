@@ -110,7 +110,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
     # Parameters:
     #   requestedPath - requested path in GET request
     def returnResponse(self, requestedPath):
-        print("Handling GET request for route " + requestedPath)
+        #print("Handling GET request for route " + requestedPath)
         # Create an array of the different levels of the requested path, last element of the path
         # is either the requested file or directory
         pathArray = requestedPath.split("/")
